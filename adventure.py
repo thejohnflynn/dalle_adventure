@@ -229,6 +229,7 @@ loc_idx = 0
 game_state = "intro"
 running = True
 bg_image = None
+current_prompt = ""
 generate_all_images(locations)
 
 # Main game loop
@@ -243,8 +244,7 @@ while running:
         draw_text_and_say(
             "Hi, welcome to the best game in the world!\nPress c to continue...",
             100,
-            100,
-            screen,
+            100
         )
     elif game_state == "scene":
         filename = get_filename(locations[loc_idx]["prompt"])
@@ -257,16 +257,14 @@ while running:
         draw_text_and_say(
             "Correct! How will you remember the right answer?\nPress c to continue...",
             100,
-            100,
-            screen,
+            100
         )
     elif game_state == "incorrect":
         bg_image = None
         draw_text_and_say(
             "Wrong! You go all the way back to the start!\nPress c to continue...",
             100,
-            100,
-            screen,
+            100
         )
     elif game_state == "choice":
         filename = get_filename(locations[loc_idx]["prompt"])
@@ -274,16 +272,14 @@ while running:
         draw_text_and_say(
             f"{locations[loc_idx]['prompt']}\nPress l for left or r for right...",
             100,
-            100,
-            screen,
+            100
         )
     elif game_state == "help":
         bg_image = None
         draw_text_and_say(
             "Please press l for left, r for right or press q to quit!\nPress c to continue...",
             100,
-            100,
-            screen,
+            100
         )
     elif game_state == "win":
         filename = get_filename(locations[-1]["prompt"])
@@ -292,10 +288,10 @@ while running:
             f"{locations[-1]['prompt']}\nPress c to quit...", 100, 100, screen
         )
 
-    # On input, transition to a different state if needed
+    # On input, transition to a different state if needed & do one-time-only actions
     for event in pygame.event.get():
+        pygame.mixer.music.stop()
         if event.type == pygame.QUIT:
-            # pygame.mixer.music.stop()
             running = False
 
         if game_state == "intro":
