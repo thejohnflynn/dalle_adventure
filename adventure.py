@@ -85,6 +85,66 @@ locations = [
     },
 ]
 
+# locations = [
+#     {
+#         "answer": "",
+#         "prompt": "You arrive into the club, you've lost all your mates, you panic a bit.",
+#     },
+#     {
+#         "answer": "",
+#         "prompt": "Something is making your vision weird. Maybe that acid you dropped one hour ago.",
+#     },
+#     {
+#         "answer": "l",
+#         "prompt": "You stumble into the toilet. Although it looks like it's covered in flowers. There are two handles on the toilet cistern. Which handle do you flush, the left handle or the right handle?",
+#     },
+#     {
+#         "answer": "",
+#         "prompt": "You flush yourself down the flower toilet. It's weird and nice at the same time.",
+#     },
+#     {
+#         "answer": "",
+#         "prompt": "You fall back onto the dancefloor. The lasers are taking over and it's wild because you have 5 hands.",
+#     },
+#     {
+#         "answer": "",
+#         "prompt": "You see your friends face. How nice they look! You're so happy to see them. Can we do this again?",
+#     },
+#     {
+#         "answer": "r",
+#         "prompt": "Your friend holds out their hands. In their left open hand is a pill. In their right open hand is a powder. Which do you choose?",
+#     },
+#     {
+#         "answer": "",
+#         "prompt": "You are mad. That one is bananas. In fact there are bananas everywhere you look now.",
+#     },
+#     {
+#         "answer": "",
+#         "prompt": "Hey. Here comes that tune you know. Work them, but you can see the word work everywhere and coming out of the club speakers dancing amongst the dancers.",
+#     },
+#     {
+#         "answer": "",
+#         "prompt": "Suddenly you are at the bar. Excuse me barman. Do you have a drink that is more tropical?",
+#     },
+#     {
+#         "answer": "r",
+#         "prompt": "He holds out two beers. They look exactly the same. Do you choose the left or the right beer?",
+#     },
+#     {
+#         "answer": "",
+#         "prompt": "You dance for twelve more hours. It is starting to look at feel a bit like a Bosch painting.",
+#     },
+#     {"answer": "", "prompt": "Debauchery."},
+#     {
+#         "answer": "l",
+#         "prompt": "I really want to get out of the club now. Do you choose the left door or the right door? They both look like exits.",
+#     },
+#     {
+#         "answer": "end",
+#         "prompt": "Oh finally. You're starting to feel more normal. You look outside and it's a very normal looking street outside the club. The bouncer tells you to keep moving. You put on your sunglasses.",
+#     },
+# ]
+
 
 # Image generation config
 IMAGE_MODEL = "dall-e-3"
@@ -105,7 +165,7 @@ def generate_all_images(locations):
     """Generate images for all locations if they do not already exist."""
     print("Generating images, this might take a few minutes...")
     os.makedirs("images", exist_ok=True)
-    client = OpenAI
+    client = OpenAI()
     for location in locations:
         prompt = location["prompt"]
         md5 = hashlib.md5(prompt.encode()).hexdigest()
@@ -127,6 +187,7 @@ def generate_image(prompt, client):
         response = client.images.generate(
             model=IMAGE_MODEL,
             prompt=f"Please make a cute image suitable for {CHILD_AGE_TARGET} year old kids, with no writing, based on: {prompt}",
+            # prompt=f"Please make trippy, drug-influenced picture based on: {prompt}",
             size=IMAGE_SIZE,
             quality=IMAGE_QUALITY,
             n=1,
@@ -187,6 +248,10 @@ def is_choice_or_scene(locations, idx):
         return "scene"
 
 
+# Prepare the images (can take a few minutes)
+generate_all_images(locations)
+
+
 # Pygame initialization
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -229,7 +294,6 @@ loc_idx = 0
 game_state = "intro"
 running = True
 bg_image = None
-generate_all_images(locations)
 
 # Main game loop
 while running:
