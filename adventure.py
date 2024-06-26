@@ -7,44 +7,44 @@ from gtts import gTTS
 from openai import OpenAI
 
 # Game locations
-locations = [
-    {
-        "answer": "",
-        "prompt": "You are in a place with lollipops all around you. There is a fountain of tree lollipops.",
-    },
-    {
-        "answer": "l",
-        "prompt": "The lollipop on the left is a big rainbow. The lollipop on the right is a love heart shape. Which lollipop will you choose?",
-    },
-    {
-        "answer": "",
-        "prompt": "You arrive at Santa and his reindeers house. You see lots of presents.",
-    },
-    {
-        "answer": "r",
-        "prompt": "Santa offers you a choice. The present on the left is covered with chocolate and marmalade. The present on the right is covered with strawberries and blackcurrant. Which present do you choose?",
-    },
-    {
-        "answer": "l",
-        "prompt": "Now you are transported to a cat land with loads of cats and poops. You wee and you poo there. A cat on the left is covered with strawberries and the right cat is covered with ants. Which one do you take home?",
-    },
-    {
-        "answer": "l",
-        "prompt": "You see a bunny rabbit with a magic wand. They zap you with the wand and now you are under the sea. There is a fire mermaid on the left or an electric mermaid on the right. Which mermaid do you want to be?",
-    },
-    {
-        "answer": "r",
-        "prompt": "Now you are a mermaid. Two seahorses ask you for a ride. The seahorse on the left is silver and the seahorse on the right has go fast power. Which seahorse do you want to ride?",
-    },
-    {
-        "answer": "r",
-        "prompt": "The seahorse drops you off and you see two mermaid cats. The one on the left has the head of a mermaid and the body of a cat. The one on the right has the opposite, they have the head of a cat and the tail of a mermaid! Which mermaid cat do you want to cuddle?",
-    },
-    {
-        "answer": "end",
-        "prompt": "Amazing work, you have won a golden medal and a big enormous rainbow lollipop with silver and gold. I hope you will play again. Goodbye.",
-    },
-]
+# locations = [
+#     {
+#         "answer": "",
+#         "prompt": "You are in a place with lollipops all around you. There is a fountain of tree lollipops.",
+#     },
+#     {
+#         "answer": "l",
+#         "prompt": "The lollipop on the left is a big rainbow. The lollipop on the right is a love heart shape. Which lollipop will you choose?",
+#     },
+#     {
+#         "answer": "",
+#         "prompt": "You arrive at Santa and his reindeers house. You see lots of presents.",
+#     },
+#     {
+#         "answer": "r",
+#         "prompt": "Santa offers you a choice. The present on the left is covered with chocolate and marmalade. The present on the right is covered with strawberries and blackcurrant. Which present do you choose?",
+#     },
+#     {
+#         "answer": "l",
+#         "prompt": "Now you are transported to a cat land with loads of cats and poops. You wee and you poo there. A cat on the left is covered with strawberries and the right cat is covered with ants. Which one do you take home?",
+#     },
+#     {
+#         "answer": "l",
+#         "prompt": "You see a bunny rabbit with a magic wand. They zap you with the wand and now you are under the sea. There is a fire mermaid on the left or an electric mermaid on the right. Which mermaid do you want to be?",
+#     },
+#     {
+#         "answer": "r",
+#         "prompt": "Now you are a mermaid. Two seahorses ask you for a ride. The seahorse on the left is silver and the seahorse on the right has go fast power. Which seahorse do you want to ride?",
+#     },
+#     {
+#         "answer": "r",
+#         "prompt": "The seahorse drops you off and you see two mermaid cats. The one on the left has the head of a mermaid and the body of a cat. The one on the right has the opposite, they have the head of a cat and the tail of a mermaid! Which mermaid cat do you want to cuddle?",
+#     },
+#     {
+#         "answer": "end",
+#         "prompt": "Amazing work, you have won a golden medal and a big enormous rainbow lollipop with silver and gold. I hope you will play again. Goodbye.",
+#     },
+# ]
 
 locations = [
     {
@@ -105,6 +105,7 @@ def generate_all_images(locations):
     """Generate images for all locations if they do not already exist."""
     print("Generating images, this might take a few minutes...")
     os.makedirs("images", exist_ok=True)
+    client = OpenAI
     for location in locations:
         prompt = location["prompt"]
         md5 = hashlib.md5(prompt.encode()).hexdigest()
@@ -112,7 +113,7 @@ def generate_all_images(locations):
         if os.path.isfile(filename):
             print(f"Skipping {filename}, already exists.")
         else:
-            if generate_image(prompt):
+            if generate_image(prompt, client):
                 print(f"Saved to {filename}.")
             else:
                 print(f"Failed to generate image for {prompt}.")
@@ -120,7 +121,7 @@ def generate_all_images(locations):
     print("Done.")
 
 
-def generate_image(prompt):
+def generate_image(prompt, client):
     """Generate an image using the OpenAI API and save it to a file."""
     try:
         response = client.images.generate(
@@ -173,33 +174,6 @@ def get_filename(prompt):
     return os.path.join("images", f"{md5}.png")
 
 
-def draw_text(text, x, y, color=WHITE):
-    """Draw text on top of a white background with long lines word wrapped."""
-    lines = split_text(text).splitlines()
-    rect_surface = pygame.Surface(
-        (SCREEN_WIDTH, len(lines) * LINE_SPACING * FONT_SIZE + 20), pygame.SRCALPHA
-    )
-    rect_surface.fill((0, 0, 0, 160))
-    screen.blit(rect_surface, (0, y - 10))
-    for i, line in enumerate(lines):
-        line_surface = font.render(line, True, color)
-        screen.blit(line_surface, (x, y + i * FONT_SIZE * LINE_SPACING))
-
-
-def say(text):  # TODO: Remove global state
-    """Convert text to speech and play it using pygame."""
-    global last_said_text
-    if text != last_said_text:
-        md5 = hashlib.md5(text.encode()).hexdigest()
-        filename = os.path.join("sounds", f"{md5}.mp3")
-        if not os.path.isfile(filename):
-            tts = gTTS(text=text, lang="en", slow=False)
-            tts.save(filename)
-        pygame.mixer.music.load(filename)
-        pygame.mixer.music.play()
-        last_said_text = text
-
-
 def draw_text_and_say(text, x, y, color=WHITE):
     """Draw text and say it using text-to-speech."""
     draw_text(text, x, y, color)
@@ -213,22 +187,48 @@ def is_choice_or_scene(locations, idx):
         return "scene"
 
 
-# Game global variables
-loc_idx = 0
-game_state = "intro"
-next_game_state = game_state
-last_said_text = ""
-running = True
-holding = True
-bg_image = None
-client = OpenAI()
-
 # Pygame initialization
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Adventure Game")
 font = pygame.font.SysFont("timesnewroman", FONT_SIZE)
+pygame.display.set_caption("Adventure Game")
 
+
+def draw_text(text, x, y, color=WHITE):  # TODO: screen and font are globals
+    """Draw text on top of a white background with long lines word wrapped."""
+    lines = split_text(text).splitlines()
+    rect_surface = pygame.Surface(
+        (SCREEN_WIDTH, len(lines) * LINE_SPACING * FONT_SIZE + 20), pygame.SRCALPHA
+    )
+    rect_surface.fill((0, 0, 0, 160))
+    screen.blit(rect_surface, (0, y - 10))
+    for i, line in enumerate(lines):
+        line_surface = font.render(line, True, color)
+        screen.blit(line_surface, (x, y + i * FONT_SIZE * LINE_SPACING))
+
+
+last_said_text = ""
+
+
+def say(text):  # TODO: Remove global last_said_text
+    """Convert text to speech and play it using pygame."""
+    global last_said_text
+    if text != last_said_text:
+        md5 = hashlib.md5(text.encode()).hexdigest()
+        filename = os.path.join("sounds", f"{md5}.mp3")
+        if not os.path.isfile(filename):
+            tts = gTTS(text=text, lang="en", slow=False)
+            tts.save(filename)
+        pygame.mixer.music.load(filename)
+        pygame.mixer.music.play()
+        last_said_text = text
+
+
+# Game global variables
+loc_idx = 0
+game_state = "intro"
+running = True
+bg_image = None
 generate_all_images(locations)
 
 # Main game loop
@@ -244,12 +244,13 @@ while running:
             "Hi, welcome to the best game in the world!\nPress c to continue...",
             100,
             100,
+            screen,
         )
     elif game_state == "scene":
         filename = get_filename(locations[loc_idx]["prompt"])
         bg_image = pygame.image.load(filename).convert()
         draw_text_and_say(
-            f"{locations[loc_idx]['prompt']}\nPress c to continue...", 100, 100
+            f"{locations[loc_idx]['prompt']}\nPress c to continue...", 100, 100, screen
         )
     elif game_state == "correct":
         bg_image = None
@@ -257,6 +258,7 @@ while running:
             "Correct! How will you remember the right answer?\nPress c to continue...",
             100,
             100,
+            screen,
         )
     elif game_state == "incorrect":
         bg_image = None
@@ -264,6 +266,7 @@ while running:
             "Wrong! You go all the way back to the start!\nPress c to continue...",
             100,
             100,
+            screen,
         )
     elif game_state == "choice":
         filename = get_filename(locations[loc_idx]["prompt"])
@@ -272,6 +275,7 @@ while running:
             f"{locations[loc_idx]['prompt']}\nPress l for left or r for right...",
             100,
             100,
+            screen,
         )
     elif game_state == "help":
         bg_image = None
@@ -279,11 +283,14 @@ while running:
             "Please press l for left, r for right or press q to quit!\nPress c to continue...",
             100,
             100,
+            screen,
         )
     elif game_state == "win":
         filename = get_filename(locations[-1]["prompt"])
         bg_image = pygame.image.load(filename).convert()
-        draw_text_and_say(f"{locations[-1]['prompt']}\nPress c to quit...", 100, 100)
+        draw_text_and_say(
+            f"{locations[-1]['prompt']}\nPress c to quit...", 100, 100, screen
+        )
 
     # On input, transition to a different state if needed
     for event in pygame.event.get():
