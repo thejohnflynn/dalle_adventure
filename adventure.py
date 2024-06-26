@@ -261,12 +261,7 @@ while running:
         filename = get_filename(locations[loc_idx]["prompt"])
         bg_image = pygame.image.load(filename).convert()
         draw_text_and_say(
-            f"{locations[loc_idx]['prompt']}\nPress l for left or r for right..."
-        )
-    elif game_state == "help":
-        bg_image = None
-        draw_text_and_say(
-            "Please press l for left, r for right or press q to quit!\nPress c to continue..."
+            f"{locations[loc_idx]['prompt']}\nPress l for left, r for right or s for say again..."
         )
     elif game_state == "win":
         filename = get_filename(locations[-1]["prompt"])
@@ -314,6 +309,9 @@ while running:
                         game_state = "incorrect"
                 elif event.key == pygame.K_s:
                     game_state = "say_again"
+        elif game_state == "say_again":
+            last_said_text = ""  # hacky way to say the same thing again!
+            game_state = is_choice_or_scene(locations, loc_idx)
         elif game_state == "win":
             if event.type == pygame.KEYDOWN:
                 running = False
