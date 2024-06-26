@@ -174,7 +174,7 @@ def get_filename(prompt):
     return os.path.join("images", f"{md5}.png")
 
 
-def draw_text_and_say(text, x, y, color=WHITE):
+def draw_text_and_say(text, x=100, y=100, color=WHITE):
     """Draw text and say it using text-to-speech."""
     draw_text(text, x, y, color)
     say(text)
@@ -194,7 +194,7 @@ font = pygame.font.SysFont("timesnewroman", FONT_SIZE)
 pygame.display.set_caption("Adventure Game")
 
 
-def draw_text(text, x, y, color=WHITE):  # TODO: screen and font are globals
+def draw_text(text, x=100, y=100, color=WHITE):  # TODO: screen and font are globals
     """Draw text on top of a white background with long lines word wrapped."""
     lines = split_text(text).splitlines()
     rect_surface = pygame.Surface(
@@ -229,7 +229,6 @@ loc_idx = 0
 game_state = "intro"
 running = True
 bg_image = None
-current_prompt = ""
 generate_all_images(locations)
 
 # Main game loop
@@ -242,55 +241,40 @@ while running:
     if game_state == "intro":
         bg_image = None
         draw_text_and_say(
-            "Hi, welcome to the best game in the world!\nPress c to continue...",
-            100,
-            100
+            "Hi, welcome to the best game in the world!\nPress c to continue..."
         )
     elif game_state == "scene":
         filename = get_filename(locations[loc_idx]["prompt"])
         bg_image = pygame.image.load(filename).convert()
-        draw_text_and_say(
-            f"{locations[loc_idx]['prompt']}\nPress c to continue...", 100, 100, screen
-        )
+        draw_text_and_say(f"{locations[loc_idx]['prompt']}\nPress c to continue...")
     elif game_state == "correct":
         bg_image = None
         draw_text_and_say(
-            "Correct! How will you remember the right answer?\nPress c to continue...",
-            100,
-            100
+            "Correct! How will you remember the right answer?\nPress c to continue..."
         )
     elif game_state == "incorrect":
         bg_image = None
         draw_text_and_say(
-            "Wrong! You go all the way back to the start!\nPress c to continue...",
-            100,
-            100
+            "Wrong! You go all the way back to the start!\nPress c to continue..."
         )
     elif game_state == "choice":
         filename = get_filename(locations[loc_idx]["prompt"])
         bg_image = pygame.image.load(filename).convert()
         draw_text_and_say(
-            f"{locations[loc_idx]['prompt']}\nPress l for left or r for right...",
-            100,
-            100
+            f"{locations[loc_idx]['prompt']}\nPress l for left or r for right..."
         )
     elif game_state == "help":
         bg_image = None
         draw_text_and_say(
-            "Please press l for left, r for right or press q to quit!\nPress c to continue...",
-            100,
-            100
+            "Please press l for left, r for right or press q to quit!\nPress c to continue..."
         )
     elif game_state == "win":
         filename = get_filename(locations[-1]["prompt"])
         bg_image = pygame.image.load(filename).convert()
-        draw_text_and_say(
-            f"{locations[-1]['prompt']}\nPress c to quit...", 100, 100, screen
-        )
+        draw_text_and_say(f"{locations[-1]['prompt']}\nPress c to quit...")
 
-    # On input, transition to a different state if needed & do one-time-only actions
+    # On input, transition to a different state if needed
     for event in pygame.event.get():
-        pygame.mixer.music.stop()
         if event.type == pygame.QUIT:
             running = False
 
