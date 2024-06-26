@@ -154,7 +154,7 @@ def draw_text(text, x, y, color=WHITE):
         screen.blit(line_surface, (x, y + i * FONT_SIZE * LINE_SPACING))
 
 
-def say(text):
+def say(text):  # TODO: Remove global state
     """Convert text to speech and play it using pygame."""
     global last_said_text
     if text != last_said_text:
@@ -174,26 +174,29 @@ def draw_text_and_say(text, x, y, color=WHITE):
     say(text)
 
 
-def handle_scene_events(event_key, correct_answer):
+def handle_choice_events(event_key, correct_answer, curr_idx):
     """Handle user choice input and update the game state accordingly."""
-    global loc_idx, game_state, holding
-    if correct_answer in ["l", "r"]:
-        if (correct_answer == "l" and event_key == pygame.K_l) or (
-            correct_answer == "r" and event_key == pygame.K_r
-        ):
-            game_state = "correct"
-            loc_idx += 1
-        else:
-            game_state = "incorrect"
-            loc_idx = 0
-    elif correct_answer == "" and event_key:
-        holding = False
-        loc_idx += 1
+    if (correct_answer == "l" and event_key == pygame.K_l) or (
+        correct_answer == "r" and event_key == pygame.K_r
+    ):
+        # game_state = "correct"
+        curr_idx += 1
+    else:
+        # game_state = "incorrect"
+        curr_idx = 0  # All the way back to the start :*(
+    return curr_idx
+
+
+def is_choice_or_scene(locations, idx):
+    if locations[idx]["answer"] in ["l", "r"]:
+        return "choice"
+    else:
+        return "scene"
 
 
 def handle_game_events():
     """Process pygame events and update the game state."""
-    global running, game_state, holding
+    global running, game_state, holding, loc_idx
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.mixer.music.stop()
@@ -202,14 +205,16 @@ def handle_game_events():
             pygame.mixer.music.stop()
             if event.key == pygame.K_q:
                 game_state = "quit"
-            elif game_state != "scene" and event.key == pygame.K_c:
+            elif event.key == pygame.K_c and game_state not in ["choice", "scene"]:
                 holding = False
-            elif game_state == "scene" and event.key in [
-                pygame.K_l,
-                pygame.K_r,
-                pygame.K_c,
-            ]:
-                handle_scene_events(event.key, locations[loc_idx]["answer"])
+            elif event.key == pygame.K_c and game_state == "scene":
+                loc_idx += 1
+                game_state = is_choice_or_scene(locations, loc_idx)
+            elif game_state == "choice" and event.key in [pygame.K_l, pygame.K_r]:
+                loc_idx = handle_choice_events(
+                    event.key, locations[loc_idx]["answer"], loc_idx
+                )
+                game_state = "correct" if loc_idx > 0 else "incorrect"
             else:
                 game_state = "help"
     return game_state != "hard_quit"
@@ -220,18 +225,27 @@ def handle_intro():
     global next_game_state, bg_image
     bg_image = None
     draw_text_and_say(
-        "Hi Tabby, welcome to the best game in the world! Press c to continue...",
+        "Hi, welcome to the best game in the world! Press c to continue...",
         100,
         100,
     )
-    next_game_state = "scene"
+    next_game_state = is_choice_or_scene(locations, loc_idx)
 
 
 def handle_scene():
     global bg_image
     filename = get_filename(locations[loc_idx]["prompt"])
     bg_image = pygame.image.load(filename).convert()
-    draw_text_and_say(f"{locations[loc_idx]['prompt']} Press a key...", 100, 100)
+    draw_text_and_say(
+        f"{locations[loc_idx]['prompt']} Press c to continue...", 100, 100
+    )
+
+
+def handle_choice():
+    global bg_image
+    filename = get_filename(locations[loc_idx]["prompt"])
+    bg_image = pygame.image.load(filename).convert()
+    draw_text_and_say(f"{locations[loc_idx]['prompt']} Press l for left or r for right...", 100, 100)
 
 
 def handle_correct():
@@ -242,7 +256,11 @@ def handle_correct():
         100,
         100,
     )
-    next_game_state = "win" if loc_idx >= len(locations) - 1 else "scene"
+    next_game_state = (
+        "win"
+        if loc_idx >= len(locations) - 1
+        else is_choice_or_scene(locations, loc_idx)
+    )
 
 
 def handle_incorrect():
@@ -251,7 +269,7 @@ def handle_incorrect():
     draw_text_and_say(
         "Wrong! You go all the way back to the start! Press c to continue...", 100, 100
     )
-    next_game_state = "scene"
+    next_game_state = is_choice_or_scene(locations, loc_idx)
 
 
 def handle_win():
@@ -273,16 +291,17 @@ def handle_help():
     global next_game_state, bg_image
     bg_image = None
     draw_text_and_say(
-        "Press l for left, r for right or press q to quit! Press c...",
+        "Please press l for left, r for right or press q to quit! Press c to continue...",
         100,
         100,
     )
-    next_game_state = "scene"
+    next_game_state = is_choice_or_scene(locations, loc_idx)
 
 
 state_handlers = {
     "intro": handle_intro,
     "scene": handle_scene,
+    "choice": handle_choice,
     "correct": handle_correct,
     "incorrect": handle_incorrect,
     "win": handle_win,
@@ -291,6 +310,9 @@ state_handlers = {
 }
 
 generate_all_images(locations)
+
+for i, l in enumerate(locations):
+    print(f"{i} {is_choice_or_scene(locations, i)}")
 
 # Main game loop
 while running:
