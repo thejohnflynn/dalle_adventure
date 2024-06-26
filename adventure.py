@@ -117,21 +117,30 @@ def generate_image(prompt):
 
 
 def split_text(text, max_length=50):
-    """Split text on whitespace into lines of specified maximum length."""
-    words = text.split()
+    """Split text on whitespace into lines of specified maximum length, preserving existing newline characters."""
+    paragraphs = text.split("\n")
     lines = []
-    current_line = ""
-    for word in words:
-        if len(current_line) + len(word) + 1 <= max_length:
-            if current_line:
-                current_line += " " + word
+
+    for paragraph in paragraphs:
+        words = paragraph.split(" ")
+        current_line = ""
+        for word in words:
+            if len(current_line) + len(word) + 1 <= max_length:
+                if current_line:
+                    current_line += " " + word
+                else:
+                    current_line = word
             else:
+                lines.append(current_line)
                 current_line = word
-        else:
+        if current_line:
             lines.append(current_line)
-            current_line = word
-    if current_line:
-        lines.append(current_line)
+        lines.append("")  # Add an empty line to space out the paragraphs
+
+    # Remove the last empty line added
+    if lines and lines[-1] == "":
+        lines.pop()
+
     return "\n".join(lines)
 
 
@@ -225,7 +234,7 @@ def handle_intro():
     global next_game_state, bg_image
     bg_image = None
     draw_text_and_say(
-        "Hi, welcome to the best game in the world! Press c to continue...",
+        "Hi, welcome to the best game in the world!\nPress c to continue...",
         100,
         100,
     )
@@ -237,7 +246,7 @@ def handle_scene():
     filename = get_filename(locations[loc_idx]["prompt"])
     bg_image = pygame.image.load(filename).convert()
     draw_text_and_say(
-        f"{locations[loc_idx]['prompt']} Press c to continue...", 100, 100
+        f"{locations[loc_idx]['prompt']}\nPress c to continue...", 100, 100
     )
 
 
@@ -245,14 +254,16 @@ def handle_choice():
     global bg_image
     filename = get_filename(locations[loc_idx]["prompt"])
     bg_image = pygame.image.load(filename).convert()
-    draw_text_and_say(f"{locations[loc_idx]['prompt']} Press l for left or r for right...", 100, 100)
+    draw_text_and_say(
+        f"{locations[loc_idx]['prompt']}\nPress l for left or r for right...", 100, 100
+    )
 
 
 def handle_correct():
     global next_game_state, bg_image
     bg_image = None
     draw_text_and_say(
-        "Correct! How will you remember the right answer? Press c to continue...",
+        "Correct! How will you remember the right answer?\nPress c to continue...",
         100,
         100,
     )
@@ -267,7 +278,7 @@ def handle_incorrect():
     global next_game_state, bg_image
     bg_image = None
     draw_text_and_say(
-        "Wrong! You go all the way back to the start! Press c to continue...", 100, 100
+        "Wrong! You go all the way back to the start!\nPress c to continue...", 100, 100
     )
     next_game_state = is_choice_or_scene(locations, loc_idx)
 
@@ -276,14 +287,14 @@ def handle_win():
     global next_game_state, bg_image
     filename = get_filename(locations[-1]["prompt"])
     bg_image = pygame.image.load(filename).convert()
-    draw_text_and_say(f"{locations[-1]['prompt']} Press c...", 100, 100)
+    draw_text_and_say(f"{locations[-1]['prompt']}\nPress c to quit...", 100, 100)
     next_game_state = "hard_quit"
 
 
 def handle_quit():
     global next_game_state, bg_image
     bg_image = None
-    draw_text_and_say("Thanks for playing, goodbye. Press c...", 100, 100)
+    draw_text_and_say("Thanks for playing, goodbye.\nPress c to quit...", 100, 100)
     next_game_state = "hard_quit"
 
 
@@ -291,7 +302,7 @@ def handle_help():
     global next_game_state, bg_image
     bg_image = None
     draw_text_and_say(
-        "Please press l for left, r for right or press q to quit! Press c to continue...",
+        "Please press l for left, r for right or press q to quit!\nPress c to continue...",
         100,
         100,
     )
@@ -310,9 +321,6 @@ state_handlers = {
 }
 
 generate_all_images(locations)
-
-for i, l in enumerate(locations):
-    print(f"{i} {is_choice_or_scene(locations, i)}")
 
 # Main game loop
 while running:
