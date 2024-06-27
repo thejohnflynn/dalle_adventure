@@ -111,30 +111,30 @@ LINE_SPACING = 1.38
 
 ## Todo
 
-[ ] YAML for location scripts rather than hard coded
-[ ] Add music
-[ ] Add sound effects
-[x] Add say again?
-[x] Finite state machine style branching
-[x] Wait until C is pressed
-[x] Add pause scenes between choices, to write down answers
-[x] Add C continue key
-[x] Add box for text
-[x] Why does 'win' screen happen after a little delay?
-[x] Use generated images
-[x] Clean up hashing for images, remove cache?
-[x] Add image generation
-[x] Store music files in sounds folder
-[x] Add images
-[x] Fix quit button top left of window
-[x] Remove quit scene
-[x] Fix newline for 'press a key'
-[x] Fix should be polling events every frame!
-[x] Add TTS
-[x] Fix 'wait' seems to make a spinning wheel of death
-[x] Add intro screens
-[x] Add 'wrong' state
-[x] Add error handling
+- [ ] YAML for location scripts rather than hard coded
+- [ ] Add music
+- [ ] Add sound effects
+- [x] Add say again?
+- [x] Finite state machine style branching
+- [x] Wait until C is pressed
+- [x] Add pause scenes between choices, to write down answers
+- [x] Add C continue key
+- [x] Add box for text
+- [x] Why does 'win' screen happen after a little delay?
+- [x] Use generated images
+- [x] Clean up hashing for images, remove cache?
+- [x] Add image generation
+- [x] Store music files in sounds folder
+- [x] Add images
+- [x] Fix quit button top left of window
+- [x] Remove quit scene
+- [x] Fix newline for 'press a key'
+- [x] Fix should be polling events every frame!
+- [x] Add TTS
+- [x] Fix 'wait' seems to make a spinning wheel of death
+- [x] Add intro screens
+- [x] Add 'wrong' state
+- [x] Add error handling
 
 ## License
 
