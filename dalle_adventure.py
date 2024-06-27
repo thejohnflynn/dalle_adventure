@@ -80,70 +80,46 @@ locations = [
         "prompt": "You are now playing video games with one big finger. There is a game controller. The joystick on the left is silver. The buttons on the right are rainbow. Which control do you press?",
     },
     {
+        "answer": "",
+        "prompt": "There is a skateboard with no end to it.",
+    },
+    {
+        "answer": "",
+        "prompt": "You are now a poo dolphin, and now a monkey is feeding you breakfast off a tree. Every single day you are eating bananas.",
+    },
+    {
+        "answer": "l",
+        "prompt": "There are two poo dolphins in front of you. The left poo dolphin is covered with poo. The right poo dolphin is covered with wee. Which one would you like to be?",
+    },
+    {
+        "answer": "",
+        "prompt": "Now you are in a Caribbean sea. You are swimming where they poo.",
+    },
+    {
+        "answer": "r",
+        "prompt": "There are two poos in the sea. The left poo is covered with poo spots, and the right one is covered with candy. Which poo would you like?",
+    },
+    {
+        "answer": "",
+        "prompt": "Now you are in a unicorn land with sweeties all around you.",
+    },
+    {
+        "answer": "r",
+        "prompt": "There are two candy canes in front of you. The left one is covered with spots, and the right one is covered with candy. Which candy cane would you like to eat?",
+    },
+    {
+        "answer": "",
+        "prompt": "Now a boy witch is following you.",
+    },
+    {
+        "answer": "l",
+        "prompt": "There are two boy witches up ahead. The left boy witch looks like a lovely lovely witch. The right boy witch is drinking beer all the time. Which boy witch would you take home for tea?",
+    },
+    {
         "answer": "end",
         "prompt": "Amazing work, you have won a golden medal and a big enormous rainbow lollipop with silver and gold. I hope you will play again. Goodbye.",
     },
 ]
-
-# locations = [
-#     {
-#         "answer": "",
-#         "prompt": "You arrive into the club, you've lost all your mates, you panic a bit.",
-#     },
-#     {
-#         "answer": "",
-#         "prompt": "Something is making your vision weird. Maybe that acid you dropped one hour ago.",
-#     },
-#     {
-#         "answer": "l",
-#         "prompt": "You stumble into the toilet. Although it looks like it's covered in flowers. There are two handles on the toilet cistern. Which handle do you flush, the left handle or the right handle?",
-#     },
-#     {
-#         "answer": "",
-#         "prompt": "You flush yourself down the flower toilet. It's weird and nice at the same time.",
-#     },
-#     {
-#         "answer": "",
-#         "prompt": "You fall back onto the dancefloor. The lasers are taking over and it's wild because you have 5 hands.",
-#     },
-#     {
-#         "answer": "",
-#         "prompt": "You see your friends face. How nice they look! You're so happy to see them. Can we do this again?",
-#     },
-#     {
-#         "answer": "r",
-#         "prompt": "Your friend holds out their hands. In their left open hand is a pill. In their right open hand is a powder. Which do you choose?",
-#     },
-#     {
-#         "answer": "",
-#         "prompt": "You are mad. That one is bananas. In fact there are bananas everywhere you look now.",
-#     },
-#     {
-#         "answer": "",
-#         "prompt": "Hey. Here comes that tune you know. Work them, but you can see the word work everywhere and coming out of the club speakers dancing amongst the dancers.",
-#     },
-#     {
-#         "answer": "",
-#         "prompt": "Suddenly you are at the bar. Excuse me barman. Do you have a drink that is more tropical?",
-#     },
-#     {
-#         "answer": "r",
-#         "prompt": "He holds out two beers. They look exactly the same. Do you choose the left or the right beer?",
-#     },
-#     {
-#         "answer": "",
-#         "prompt": "You dance for twelve more hours. It is starting to look at feel a bit like a Bosch painting.",
-#     },
-#     {"answer": "", "prompt": "Debauchery."},
-#     {
-#         "answer": "l",
-#         "prompt": "I really want to get out of the club now. Do you choose the left door or the right door? They both look like exits.",
-#     },
-#     {
-#         "answer": "end",
-#         "prompt": "Oh finally. You're starting to feel more normal. You look outside and it's a very normal looking street outside the club. The bouncer tells you to keep moving. You put on your sunglasses.",
-#     },
-# ]
 
 
 # Image generation config
@@ -187,7 +163,6 @@ def generate_image(prompt, client):
         response = client.images.generate(
             model=IMAGE_MODEL,
             prompt=f"Please make a cute image suitable for {CHILD_AGE_TARGET} year old kids, with no writing, based on: {prompt}",
-            # prompt=f"Please make trippy, drug-influenced picture based on: {prompt}",
             size=IMAGE_SIZE,
             quality=IMAGE_QUALITY,
             n=1,
